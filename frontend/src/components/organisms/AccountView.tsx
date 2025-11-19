@@ -23,6 +23,23 @@ export const AccountView: React.FC<AccountViewProps> = ({
     return (
       <div className="flex-1 overflow-y-auto p-6">
         <div className="max-w-4xl mx-auto space-y-6">
+          <div className="text-center py-4">
+            <h1 className="text-3xl font-bold text-gray-900">가계부</h1>
+          </div>
+
+          <div className="bg-white rounded-2xl border-2 border-[#8B7355] p-8 shadow-lg">
+            <h2 className="text-2xl font-bold text-gray-900 mb-4 text-center border-b-2 border-[#d4c4a8] pb-3">
+              📊 종합 지출 분석
+            </h2>
+            <div className="text-gray-900 leading-relaxed text-sm">
+              <p className="text-center text-gray-500 py-4">
+                {transactions.length === 0 
+                  ? '아직 기록된 지출 내역이 없습니다. 첫 지출을 기록해보세요!'
+                  : `총 ${transactions.length}개의 거래 내역이 기록되었습니다.`}
+              </p>
+            </div>
+          </div>
+
           <div className="bg-gradient-to-br from-white to-[#f5f0e8] rounded-2xl border-2 border-[#8B7355] p-8 shadow-lg">
             <h1 className="text-2xl font-bold text-gray-900 mb-6">💰 안녕하세요, Aiion님</h1>
             <div className="grid grid-cols-2 gap-6">

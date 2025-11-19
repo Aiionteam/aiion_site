@@ -19,7 +19,21 @@ export const PathfinderView: React.FC<PathfinderViewProps> = ({
       <div className={`flex-1 flex flex-col overflow-hidden ${darkMode ? 'bg-gray-900' : 'bg-[#e8e2d5]'}`}>
         <div className="flex-1 overflow-y-auto p-6">
           <div className="max-w-4xl mx-auto space-y-6">
-            <h1 className="text-3xl font-bold text-gray-900 text-center">Path Finder</h1>
+            <div className="text-center py-4">
+              <h1 className="text-3xl font-bold text-gray-900">Path Finder</h1>
+            </div>
+
+            <div className="bg-white rounded-2xl border-2 border-[#8B7355] p-8 shadow-lg">
+              <h2 className="text-2xl font-bold text-gray-900 mb-4 text-center border-b-2 border-[#d4c4a8] pb-3">
+                📊 종합 학습 분석
+              </h2>
+              <div className="text-gray-900 leading-relaxed text-sm">
+                <p className="text-center text-gray-500 py-4">
+                  아직 기록된 학습 데이터가 없습니다. 첫 학습을 시작해보세요!
+                </p>
+              </div>
+            </div>
+
             <div className="grid grid-cols-2 gap-6">
               <Button
                 onClick={() => setPathfinderView('learning')}
