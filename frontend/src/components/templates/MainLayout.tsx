@@ -68,7 +68,19 @@ export const MainLayout: React.FC<MainLayoutProps> = memo(({
 
       <div className={`flex-1 flex flex-col overflow-hidden ${darkMode ? 'bg-gray-900' : ''}`}>
         {avatarMode ? (
-          <AvatarMode isListening={isListening} />
+          <>
+            <AvatarMode isListening={isListening} />
+            <PromptInput
+              inputText={inputText}
+              setInputText={setInputText}
+              loading={loading}
+              avatarMode={avatarMode}
+              micAvailable={micAvailable}
+              onMicClick={handleMicClick}
+              onSubmit={handleSubmit}
+              darkMode={darkMode}
+            />
+          </>
         ) : currentCategory === 'home' ? (
           <>
             <ChatContainer interactions={interactions} darkMode={darkMode} />
@@ -86,6 +98,16 @@ export const MainLayout: React.FC<MainLayoutProps> = memo(({
         ) : (
           <>
             {children}
+            <PromptInput
+              inputText={inputText}
+              setInputText={setInputText}
+              loading={loading}
+              avatarMode={avatarMode}
+              micAvailable={micAvailable}
+              onMicClick={handleMicClick}
+              onSubmit={handleSubmit}
+              darkMode={darkMode}
+            />
           </>
         )}
       </div>

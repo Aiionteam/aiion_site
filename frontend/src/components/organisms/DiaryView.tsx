@@ -80,11 +80,19 @@ export const DiaryView: React.FC<DiaryViewProps> = ({
 
   // Write 뷰
   if (diaryView === 'write') {
+    const [selectedDate, setSelectedDate] = useState({
+      year: new Date().getFullYear(),
+      month: new Date().getMonth() + 1,
+      day: new Date().getDate(),
+      dayOfWeek: ['일', '월', '화', '수', '목', '금', '토'][new Date().getDay()]
+    });
+    const [promptText, setPromptText] = useState('');
+
     const handleSave = () => {
       if (newDiaryTitle.trim() && newDiaryContent.trim()) {
         const newDiary: Diary = {
           id: Date.now().toString(),
-          date: new Date().toISOString().split('T')[0],
+          date: `${selectedDate.year}-${String(selectedDate.month).padStart(2, '0')}-${String(selectedDate.day).padStart(2, '0')}`,
           title: newDiaryTitle,
           content: newDiaryContent,
           emotion: selectedEmotion,
@@ -98,88 +106,117 @@ export const DiaryView: React.FC<DiaryViewProps> = ({
       }
     };
 
+    const handlePromptSubmit = () => {
+      if (promptText.trim()) {
+        // 프롬프트 처리 로직
+        console.log('Prompt submitted:', promptText);
+        setPromptText('');
+      }
+    };
+
     return (
-      <div className="flex-1 flex flex-col overflow-hidden">
-        <div className="flex-1 overflow-y-auto p-6">
-          <div className="max-w-4xl mx-auto space-y-4">
-            <div className="flex items-center justify-between mb-4">
-              <h1 className="text-2xl font-bold text-gray-900">일기 작성</h1>
-              <Button
-                onClick={() => {
-                  setNewDiaryTitle('');
-                  setNewDiaryContent('');
-                  setDiaryView('home');
-                }}
-                variant="ghost"
-              >
-                ← 돌아가기
-              </Button>
-            </div>
-
-            <div className="bg-white rounded-2xl border-2 border-[#8B7355] p-8 shadow-lg">
-              <div className="space-y-4">
-                <Input
-                  label="제목"
-                  placeholder="일기 제목을 입력하세요"
-                  value={newDiaryTitle}
-                  onChange={(e) => setNewDiaryTitle(e.target.value)}
-                  maxLength={100}
-                  showCharCount
+      <div className="flex-1 flex flex-col overflow-hidden bg-[#f5f1e8]">
+        {/* 상단 헤더 - 일기 작성 + 날짜 */}
+        <div className="border-b-2 border-[#8B7355] p-6 bg-white">
+          <div className="max-w-5xl mx-auto">
+            <div className="flex items-center justify-between">
+              <h1 className="text-xl font-bold text-gray-900">일기 작성</h1>
+              <div className="flex items-center border-2 border-[#8B7355] bg-white">
+                <input
+                  type="number"
+                  value={selectedDate.year}
+                  onChange={(e) => setSelectedDate({...selectedDate, year: parseInt(e.target.value) || selectedDate.year})}
+                  className="w-20 px-3 py-2 text-center border-r-2 border-[#8B7355] focus:outline-none text-gray-900"
                 />
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    내용
-                  </label>
-                  <textarea
-                    placeholder="오늘 하루를 기록해보세요..."
-                    rows={15}
-                    value={newDiaryContent}
-                    onChange={(e) => setNewDiaryContent(e.target.value)}
-                    className="w-full px-4 py-2 border-2 border-[#d4c4a8] rounded-lg focus:outline-none focus:border-[#8B7355] resize-none"
-                  />
-                </div>
-
-                <div className="flex items-center gap-4">
-                  <label className="block text-sm font-medium text-gray-700">
-                    감정
-                  </label>
-                  <div className="flex gap-2">
-                    {['😊', '😢', '😡', '😴', '😃', '😌'].map((emoji) => (
-                      <button
-                        key={emoji}
-                        onClick={() => setSelectedEmotion(emoji)}
-                        className={`text-3xl hover:scale-125 transition-transform ${
-                          selectedEmotion === emoji ? 'scale-125 ring-2 ring-[#8B7355] rounded-full' : ''
-                        }`}
-                      >
-                        {emoji}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="flex gap-4 pt-4">
-                  <Button
-                    onClick={handleSave}
-                    className="flex-1"
-                    disabled={!newDiaryTitle.trim() || !newDiaryContent.trim()}
-                  >
-                    저장하기
-                  </Button>
-                  <Button
-                    onClick={() => {
-                      setNewDiaryTitle('');
-                      setNewDiaryContent('');
-                      setDiaryView('home');
-                    }}
-                    variant="secondary"
-                  >
-                    취소
-                  </Button>
-                </div>
+                <input
+                  type="number"
+                  value={selectedDate.month}
+                  onChange={(e) => setSelectedDate({...selectedDate, month: parseInt(e.target.value) || selectedDate.month})}
+                  className="w-16 px-3 py-2 text-center border-r-2 border-[#8B7355] focus:outline-none text-gray-900"
+                />
+                <input
+                  type="number"
+                  value={selectedDate.day}
+                  onChange={(e) => setSelectedDate({...selectedDate, day: parseInt(e.target.value) || selectedDate.day})}
+                  className="w-16 px-3 py-2 text-center border-r-2 border-[#8B7355] focus:outline-none text-gray-900"
+                />
+                <select
+                  value={selectedDate.dayOfWeek}
+                  onChange={(e) => setSelectedDate({...selectedDate, dayOfWeek: e.target.value})}
+                  className="px-3 py-2 focus:outline-none bg-white text-gray-900"
+                >
+                  {['일', '월', '화', '수', '목', '금', '토'].map(day => (
+                    <option key={day} value={day}>{`${day}요일`}</option>
+                  ))}
+                </select>
               </div>
             </div>
+          </div>
+        </div>
+
+        {/* 제목란 + 저장 버튼 */}
+        <div className="border-b-2 border-[#8B7355] p-4 bg-white">
+          <div className="max-w-5xl mx-auto flex items-center gap-4">
+            <label className="text-base font-medium text-gray-900 whitespace-nowrap">제목</label>
+            <input
+              type="text"
+              placeholder="제목을 입력해주세요"
+              value={newDiaryTitle}
+              onChange={(e) => setNewDiaryTitle(e.target.value)}
+              className="flex-1 px-4 py-2 border-2 border-[#d4c4a8] rounded-lg focus:outline-none focus:border-[#8B7355] bg-white text-gray-900"
+            />
+            <button
+              onClick={handleSave}
+              disabled={!newDiaryTitle.trim() || !newDiaryContent.trim()}
+              className="px-6 py-2 bg-[#8B7355] text-white font-medium rounded-lg hover:bg-[#6d5943] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              저장
+            </button>
+          </div>
+        </div>
+
+        {/* 내용란 */}
+        <div className="flex-1 overflow-hidden bg-white">
+          <div className="max-w-5xl mx-auto h-full p-4">
+            <textarea
+              placeholder="내용을 입력해주세요"
+              value={newDiaryContent}
+              onChange={(e) => setNewDiaryContent(e.target.value)}
+              className="w-full h-full px-4 py-3 border-2 border-[#d4c4a8] rounded-lg focus:outline-none focus:border-[#8B7355] resize-none bg-white text-gray-900"
+            />
+          </div>
+        </div>
+
+        {/* 하단 프롬프트 입력 */}
+        <div className="border-t-2 border-[#8B7355] p-4 bg-[#f5f1e8]">
+          <div className="max-w-5xl mx-auto flex items-center gap-3">
+            <input
+              type="text"
+              placeholder="프롬프트를 입력하세요"
+              value={promptText}
+              onChange={(e) => setPromptText(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && promptText.trim()) {
+                  e.preventDefault();
+                  handlePromptSubmit();
+                }
+              }}
+              className="flex-1 px-4 py-3 border-2 border-[#d4c4a8] rounded-lg focus:outline-none focus:border-[#8B7355] bg-white text-gray-900"
+            />
+            <button
+              onClick={handlePromptSubmit}
+              disabled={!promptText.trim()}
+              className="w-12 h-12 rounded-full bg-[#8B7355] hover:bg-[#6d5943] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center text-white transition-colors"
+            >
+              <svg 
+                xmlns="http://www.w3.org/2000/svg" 
+                viewBox="0 0 24 24" 
+                fill="currentColor" 
+                className="w-6 h-6"
+              >
+                <path d="M3.478 2.405a.75.75 0 00-.926.94l2.432 7.905H13.5a.75.75 0 010 1.5H4.984l-2.432 7.905a.75.75 0 00.926.94 60.519 60.519 0 0018.445-8.986.75.75 0 000-1.218A60.517 60.517 0 003.478 2.405z" />
+              </svg>
+            </button>
           </div>
         </div>
       </div>
