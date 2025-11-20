@@ -208,7 +208,7 @@ export const PathfinderView: React.FC<PathfinderViewProps> = ({
         <div className="flex-1 overflow-y-auto p-6">
           <div className="max-w-4xl mx-auto space-y-4">
             <div className="bg-white rounded-2xl border-2 border-[#8B7355] p-8 shadow-lg">
-              <p className="text-center text-gray-500 py-8">로드맵이 없습니다.</p>
+              <p className="text-center text-gray-500 py-8">로드맵이 있습니다.</p>
             </div>
           </div>
         </div>
