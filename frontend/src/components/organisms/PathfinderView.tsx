@@ -9,16 +9,16 @@ interface PathfinderViewProps {
 }
 
 const getCommonStyles = (darkMode: boolean) => ({
-  bg: darkMode ? 'bg-gray-900' : 'bg-[#e8e2d5]',
-  header: darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-[#d4c4a8]',
-  card: darkMode ? 'bg-gray-800 border-gray-600' : 'bg-white border-[#8B7355]',
+  bg: darkMode ? 'bg-[#0a0a0a]' : 'bg-[#e8e2d5]',
+  header: darkMode ? 'bg-[#121212] border-[#2a2a2a]' : 'bg-white border-[#d4c4a8]',
+  card: darkMode ? 'bg-[#121212] border-[#2a2a2a]' : 'bg-white border-[#8B7355]',
   title: darkMode ? 'text-white' : 'text-gray-900',
   textSecondary: darkMode ? 'text-gray-300' : 'text-gray-700',
   textMuted: darkMode ? 'text-gray-400' : 'text-gray-500',
-  border: darkMode ? 'border-gray-600' : 'border-[#d4c4a8]',
-  button: darkMode ? 'bg-gradient-to-br from-gray-700 to-gray-800 border-gray-600' : 'bg-gradient-to-br from-white to-[#f5f0e8] border-[#8B7355]',
-  buttonHover: darkMode ? 'text-gray-300 hover:text-white hover:bg-gray-700' : 'text-gray-600 hover:text-gray-900 hover:bg-[#f5f1e8]',
-  input: darkMode ? 'bg-gray-700 text-white border-gray-600 focus:border-gray-500 placeholder-gray-400' : 'border-[#d4c4a8] focus:border-[#8B7355]',
+  border: darkMode ? 'border-[#2a2a2a]' : 'border-[#d4c4a8]',
+  button: darkMode ? 'bg-gradient-to-br from-[#1a1a1a] to-[#121212] border-[#2a2a2a]' : 'bg-gradient-to-br from-white to-[#f5f0e8] border-[#8B7355]',
+  buttonHover: darkMode ? 'text-gray-300 hover:text-white hover:bg-[#1a1a1a]' : 'text-gray-600 hover:text-gray-900 hover:bg-[#f5f1e8]',
+  input: darkMode ? 'bg-[#1a1a1a] text-white border-[#2a2a2a] focus:border-[#333333] placeholder-gray-400' : 'border-[#d4c4a8] focus:border-[#8B7355]',
 });
 
 export const PathfinderView: React.FC<PathfinderViewProps> = ({

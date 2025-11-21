@@ -34,7 +34,7 @@ export const ChatMessage: React.FC<ChatMessageProps> = memo(({
         <div
           className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
             darkMode
-              ? 'bg-gradient-to-br from-gray-700 to-gray-600'
+              ? 'bg-gradient-to-br from-[#1a1a1a] to-[#222222]'
               : 'bg-gradient-to-br from-[#8B7355] to-[#c4a57b]'
           }`}
         >
@@ -44,7 +44,7 @@ export const ChatMessage: React.FC<ChatMessageProps> = memo(({
           <div
             className={`rounded-2xl rounded-tl-sm px-4 py-2 shadow-sm ${
               darkMode
-                ? 'bg-gray-800 border border-gray-700'
+                ? 'bg-[#121212] border border-[#2a2a2a]'
                 : 'bg-white border border-[#d4cdc0]'
             }`}
           >

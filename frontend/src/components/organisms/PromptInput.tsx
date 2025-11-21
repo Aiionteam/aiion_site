@@ -55,7 +55,7 @@ export const PromptInput: React.FC<PromptInputProps> = memo(({
   return (
     <div
       className={`border-t p-4 ${
-        darkMode ? 'border-gray-700 bg-gray-800' : 'border-[#d4cdc0] bg-[#f5f1e8]'
+        darkMode ? 'border-[#2a2a2a] bg-[#121212]' : 'border-[#d4cdc0] bg-[#f5f1e8]'
       }`}
     >
       <div className="pl-6 pr-6">
@@ -75,6 +75,13 @@ export const PromptInput: React.FC<PromptInputProps> = memo(({
               }}
               onBlur={(e) => {
                 const relatedTarget = e.relatedTarget as HTMLElement;
+                // 버튼 클릭으로 인한 blur인 경우 포커스 유지
+                if (relatedTarget?.closest('button[type="button"]')) {
+                  setTimeout(() => {
+                    inputRef.current?.focus();
+                  }, 0);
+                  return;
+                }
                 if (!loading && !avatarMode && !relatedTarget?.closest('button')) {
                   setTimeout(() => {
                     if (inputRef.current && document.activeElement !== inputRef.current) {
@@ -89,7 +96,7 @@ export const PromptInput: React.FC<PromptInputProps> = memo(({
               maxLength={5000}
               className={`w-full px-4 py-3 pr-16 border rounded-lg focus:outline-none focus:ring-2 focus:border-transparent disabled:opacity-50 ${
                 darkMode
-                  ? 'bg-gray-700 text-white border-gray-600 focus:ring-blue-500 placeholder-gray-400'
+                  ? 'bg-[#1a1a1a] text-white border-[#2a2a2a] focus:ring-blue-500 placeholder-gray-400'
                   : 'bg-white border-[#d4cdc0] focus:ring-[#8B7355]'
               }`}
             />
@@ -105,6 +112,11 @@ export const PromptInput: React.FC<PromptInputProps> = memo(({
           </div>
           {/* Microphone Button */}
           <button
+            type="button"
+            onMouseDown={(e) => {
+              // 버튼 클릭 시 입력창 포커스가 해제되지 않도록 방지
+              e.preventDefault();
+            }}
             onClick={onMicClick}
             disabled={!micAvailable}
             className={`w-12 h-12 rounded-full flex items-center justify-center transition-all flex-shrink-0 ${
@@ -112,10 +124,10 @@ export const PromptInput: React.FC<PromptInputProps> = memo(({
                 ? 'bg-red-500 hover:bg-red-600 text-white'
                 : micAvailable
                 ? darkMode
-                  ? 'bg-gray-700 hover:bg-gray-600 text-gray-200'
+                  ? 'bg-[#1a1a1a] hover:bg-[#222222] text-gray-200'
                   : 'bg-[#d4cdc0] hover:bg-[#c4bdb0] text-gray-700'
                 : darkMode
-                ? 'bg-gray-800 text-gray-600 cursor-not-allowed'
+                ? 'bg-[#121212] text-gray-600 cursor-not-allowed'
                 : 'bg-[#e8dcc8] text-gray-400 cursor-not-allowed'
             }`}
             title={avatarMode ? '대화 종료' : '마이크 아이콘'}
@@ -125,11 +137,27 @@ export const PromptInput: React.FC<PromptInputProps> = memo(({
           {/* Send Button */}
           {!avatarMode && (
             <button
-              onClick={onSubmit}
+              type="button"
+              onMouseDown={(e) => {
+                // 버튼 클릭 시 입력창 포커스가 해제되지 않도록 방지
+                e.preventDefault();
+              }}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                if (inputText.trim() && !loading) {
+                  onSubmit();
+                  // 전송 후 입력창에 다시 포커스 맞추기
+                  setTimeout(() => {
+                    inputRef.current?.focus();
+                  }, 100);
+                }
+              }}
               disabled={loading || !inputText.trim()}
               className={`w-12 h-12 rounded-full flex items-center justify-center text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0 ${
                 darkMode ? 'bg-blue-600 hover:bg-blue-700' : 'bg-[#8B7355] hover:bg-[#6d5943]'
               }`}
+              title="전송"
             >
               {loading ? (
                 <svg

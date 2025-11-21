@@ -59,20 +59,20 @@ export const Sidebar: React.FC<SidebarProps> = memo(({
       className={`${
         sidebarOpen ? 'w-64' : 'w-16'
       } ${
-        darkMode ? 'bg-gray-800 border-gray-700' : 'bg-[#f5f1e8] border-[#d4cdc0]'
+        darkMode ? 'bg-[#121212] border-[#2a2a2a]' : 'bg-[#f5f1e8] border-[#d4cdc0]'
       } border-r transition-all duration-300 flex flex-col relative`}
     >
       {/* Sidebar Handle */}
       <div
         onMouseDown={handleSidebarDrag}
         className={`absolute ${sidebarOpen ? 'left-full' : 'left-0'} top-0 bottom-0 w-1 ${
-          darkMode ? 'bg-gray-700 hover:bg-gray-600' : 'bg-[#d4cdc0] hover:bg-[#8B7355]'
+          darkMode ? 'bg-[#2a2a2a] hover:bg-[#333333]' : 'bg-[#d4cdc0] hover:bg-[#8B7355]'
         } cursor-col-resize z-10 transition-colors`}
         title="사이드바 손잡이"
       />
 
       {/* Menu Header */}
-      <div className={`p-4 border-b ${darkMode ? 'border-gray-700' : 'border-[#d4cdc0]'}`}>
+      <div className={`p-4 border-b ${darkMode ? 'border-[#2a2a2a]' : 'border-[#d4cdc0]'}`}>
         <div className="flex items-center justify-center">
           <div className="w-20 h-20 flex items-center justify-center flex-shrink-0">
             <img
@@ -103,10 +103,10 @@ export const Sidebar: React.FC<SidebarProps> = memo(({
             className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-colors text-left ${
               currentCategory === item.id
                 ? darkMode
-                  ? 'bg-gray-700 text-white font-semibold'
+                  ? 'bg-[#1a1a1a] text-white font-semibold'
                   : 'bg-[#d4cdc0] text-gray-900 font-semibold'
                 : darkMode
-                ? 'hover:bg-gray-700 text-gray-300'
+                ? 'hover:bg-[#1a1a1a] text-gray-300'
                 : 'hover:bg-[#e8e2d5] text-gray-700'
             }`}
           >
@@ -117,7 +117,7 @@ export const Sidebar: React.FC<SidebarProps> = memo(({
       </nav>
 
       {/* Theme Toggle */}
-      <div className={`p-2 border-t ${darkMode ? 'border-gray-700' : 'border-[#d4cdc0]'}`}>
+      <div className={`p-2 border-t ${darkMode ? 'border-[#2a2a2a]' : 'border-[#d4cdc0]'}`}>
         <Toggle
           checked={darkMode}
           onChange={setDarkMode}
@@ -130,7 +130,7 @@ export const Sidebar: React.FC<SidebarProps> = memo(({
         <button
           onClick={() => setSidebarOpen(!sidebarOpen)}
           className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
-            darkMode ? 'hover:bg-gray-700 text-gray-300' : 'hover:bg-[#e8e2d5] text-gray-700'
+            darkMode ? 'hover:bg-[#1a1a1a] text-gray-300' : 'hover:bg-[#e8e2d5] text-gray-700'
           }`}
         >
           <Icon name={sidebarOpen ? 'arrowLeft' : 'arrowRight'} />
