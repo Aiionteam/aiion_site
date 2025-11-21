@@ -22,7 +22,7 @@ export const ChatContainer: React.FC<ChatContainerProps> = memo(({
   return (
     <div
       ref={chatContainerRef}
-      className={`flex-1 overflow-y-auto ${darkMode ? 'bg-gray-900' : 'bg-[#e8e2d5]'}`}
+      className={`flex-1 overflow-y-auto ${darkMode ? 'bg-[#0a0a0a]' : 'bg-[#e8e2d5]'}`}
     >
       <div className="pl-4 pr-4 py-4 space-y-3">
         {interactions.map((interaction) => (
