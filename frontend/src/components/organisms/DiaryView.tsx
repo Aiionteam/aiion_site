@@ -5,15 +5,18 @@ import { DiaryView as DiaryViewType, Diary } from '../types';
 interface DiaryViewProps {
   diaryView: DiaryViewType;
   setDiaryView: (view: DiaryViewType) => void;
+  diaries: Diary[];
+  setDiaries: (diaries: Diary[] | ((prev: Diary[]) => Diary[])) => void;
   darkMode?: boolean;
 }
 
 export const DiaryView: React.FC<DiaryViewProps> = ({
   diaryView,
   setDiaryView,
+  diaries,
+  setDiaries,
   darkMode = false,
 }) => {
-  const [diaries, setDiaries] = useState<Diary[]>([]);
   const [selectedDiary, setSelectedDiary] = useState<Diary | null>(null);
   const [newDiaryTitle, setNewDiaryTitle] = useState('');
   const [newDiaryContent, setNewDiaryContent] = useState('');
@@ -235,7 +238,13 @@ export const DiaryView: React.FC<DiaryViewProps> = ({
                   onChange={(e) => {
                     const value = parseInt(e.target.value);
                     if (!isNaN(value) && value >= 1000 && value <= 9999) {
-                      setSelectedDate({...selectedDate, year: value});
+                      const date = new Date(value, selectedDate.month - 1, selectedDate.day);
+                      const dayNames = ['일', '월', '화', '수', '목', '금', '토'];
+                      setSelectedDate({
+                        ...selectedDate,
+                        year: value,
+                        dayOfWeek: dayNames[date.getDay()]
+                      });
                       setErrorMessage('');
                     } else if (e.target.value === '') {
                       setSelectedDate({...selectedDate, year: new Date().getFullYear()});
@@ -255,7 +264,16 @@ export const DiaryView: React.FC<DiaryViewProps> = ({
                   onChange={(e) => {
                     const value = parseInt(e.target.value);
                     if (!isNaN(value) && value >= 1 && value <= 12) {
-                      setSelectedDate({...selectedDate, month: value});
+                      const maxDay = new Date(selectedDate.year, value, 0).getDate();
+                      const newDay = selectedDate.day > maxDay ? maxDay : selectedDate.day;
+                      const date = new Date(selectedDate.year, value - 1, newDay);
+                      const dayNames = ['일', '월', '화', '수', '목', '금', '토'];
+                      setSelectedDate({
+                        ...selectedDate,
+                        month: value,
+                        day: newDay,
+                        dayOfWeek: dayNames[date.getDay()]
+                      });
                       setErrorMessage('');
                     } else if (e.target.value === '') {
                       setSelectedDate({...selectedDate, month: new Date().getMonth() + 1});
@@ -274,8 +292,15 @@ export const DiaryView: React.FC<DiaryViewProps> = ({
                   value={selectedDate.day}
                   onChange={(e) => {
                     const value = parseInt(e.target.value);
-                    if (!isNaN(value) && value >= 1 && value <= 31) {
-                      setSelectedDate({...selectedDate, day: value});
+                    const maxDay = new Date(selectedDate.year, selectedDate.month, 0).getDate();
+                    if (!isNaN(value) && value >= 1 && value <= maxDay) {
+                      const date = new Date(selectedDate.year, selectedDate.month - 1, value);
+                      const dayNames = ['일', '월', '화', '수', '목', '금', '토'];
+                      setSelectedDate({
+                        ...selectedDate,
+                        day: value,
+                        dayOfWeek: dayNames[date.getDay()]
+                      });
                       setErrorMessage('');
                     } else if (e.target.value === '') {
                       setSelectedDate({...selectedDate, day: new Date().getDate()});
@@ -290,7 +315,24 @@ export const DiaryView: React.FC<DiaryViewProps> = ({
                 />
                 <select
                   value={selectedDate.dayOfWeek}
-                  onChange={(e) => setSelectedDate({...selectedDate, dayOfWeek: e.target.value})}
+                  onChange={(e) => {
+                    const dayNames = ['일', '월', '화', '수', '목', '금', '토'];
+                    const currentDate = new Date(selectedDate.year, selectedDate.month - 1, selectedDate.day);
+                    const currentDayOfWeek = currentDate.getDay();
+                    const targetDayOfWeek = dayNames.indexOf(e.target.value);
+                    const diff = targetDayOfWeek - currentDayOfWeek;
+                    const newDate = new Date(currentDate);
+                    newDate.setDate(currentDate.getDate() + diff);
+                    const maxDay = new Date(newDate.getFullYear(), newDate.getMonth() + 1, 0).getDate();
+                    const adjustedDay = Math.min(newDate.getDate(), maxDay);
+                    setSelectedDate({
+                      ...selectedDate,
+                      day: adjustedDay,
+                      month: newDate.getMonth() + 1,
+                      year: newDate.getFullYear(),
+                      dayOfWeek: e.target.value
+                    });
+                  }}
                   onTouchStart={(e) => e.stopPropagation()}
                   onTouchMove={(e) => e.stopPropagation()}
                   className="bg-transparent focus:outline-none text-white font-medium cursor-pointer text-xs sm:text-sm flex-shrink-0 ml-1 sm:ml-0"

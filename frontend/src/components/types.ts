@@ -23,6 +23,7 @@ export interface Event {
 
 export interface Task {
   id: string;
+  date: string;
   text: string;
   completed?: boolean;
 }
