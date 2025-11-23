@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Button, Input } from '../atoms';
-import { Event, Task } from '../types';
+import { Event, Task, Diary } from '../types';
 import { getLocalDateStr } from '../../lib';
 
 interface CalendarViewProps {
@@ -10,8 +10,9 @@ interface CalendarViewProps {
   setCurrentMonth: (date: Date) => void;
   events: Event[];
   setEvents: (events: Event[]) => void;
-  todayTasks: Task[];
-  setTodayTasks: (tasks: Task[]) => void;
+  tasks: Task[];
+  setTasks: (tasks: Task[] | ((prev: Task[]) => Task[])) => void;
+  diaries?: Diary[];
   darkMode?: boolean;
 }
 
@@ -22,8 +23,9 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
   setCurrentMonth,
   events,
   setEvents,
-  todayTasks,
-  setTodayTasks,
+  tasks,
+  setTasks,
+  diaries = [],
   darkMode = false,
 }) => {
   const [newEventText, setNewEventText] = useState('');
@@ -67,18 +69,22 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
   const handleAddTask = () => {
     if (!newTaskText.trim() || newTaskText.length > 20) return;
 
-    if (todayTasks.length >= 100) {
+    const selectedDateStr = getLocalDateStr(selectedDate);
+    const dateTasks = tasks.filter(t => t.date === selectedDateStr);
+    
+    if (dateTasks.length >= 100) {
       alert('할 일은 최대 100개까지 저장할 수 있습니다.');
       return;
     }
 
     const newTask: Task = {
       id: Date.now().toString(),
+      date: selectedDateStr,
       text: newTaskText,
       completed: false,
     };
 
-    setTodayTasks([...todayTasks, newTask]);
+    setTasks([...tasks, newTask]);
     setNewTaskText('');
   };
 
@@ -89,7 +95,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
   };
 
   const handleDeleteTask = (taskId: string) => {
-    setTodayTasks(todayTasks.filter(t => t.id !== taskId));
+    setTasks(tasks.filter(t => t.id !== taskId));
   };
 
   const confirmDelete = () => {
@@ -98,20 +104,24 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
     if (deleteTarget.type === 'event') {
       setEvents(events.filter(e => e.id !== deleteTarget.id));
     } else {
-      setTodayTasks(todayTasks.filter(t => t.id !== deleteTarget.id));
+      setTasks(tasks.filter(t => t.id !== deleteTarget.id));
     }
     setDeleteTarget(null);
   };
 
   // 일정을 시간순으로 정렬 (하루종일이 맨 위)
+  const selectedDateStr = getLocalDateStr(selectedDate);
   const sortedEvents = [...events]
-    .filter(e => e.date === getLocalDateStr(selectedDate))
+    .filter(e => e.date === selectedDateStr)
     .sort((a, b) => {
       if (a.isAllDay && !b.isAllDay) return -1;
       if (!a.isAllDay && b.isAllDay) return 1;
       if (a.isAllDay && b.isAllDay) return 0;
       return (a.time || '').localeCompare(b.time || '');
     });
+
+  // 선택한 날짜의 할 일 목록
+  const selectedDateTasks = tasks.filter(t => t.date === selectedDateStr);
 
   return (
     <div className={`flex-1 overflow-y-auto ${darkMode ? 'bg-[#0a0a0a]' : 'bg-[#e8e2d5]'}`} style={{ WebkitOverflowScrolling: 'touch' }}>
@@ -190,6 +200,8 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
               const isToday = dateStr === todayStr;
               const isSelected = dateStr === getLocalDateStr(selectedDate);
               const hasEvents = events.some((e) => e.date === dateStr);
+              const hasDiary = diaries.some((d) => d.date === dateStr);
+              const hasTasks = tasks.some((t) => t.date === dateStr);
               const dayOfWeek = date.getDay();
 
               return (
@@ -211,9 +223,17 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                   } ${dayOfWeek === 0 && !isSelected ? 'text-red-500' : ''}`}
                 >
                   <span className={isSelected ? 'text-white' : ''}>{day}</span>
-                  {hasEvents && (
-                    <span className="w-2 h-2 bg-green-500 rounded-full mt-1 animate-pulse"></span>
-                  )}
+                  <div className="flex gap-1 mt-1">
+                    {hasEvents && (
+                      <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
+                    )}
+                    {hasDiary && (
+                      <span className="w-2 h-2 bg-purple-500 rounded-full"></span>
+                    )}
+                    {hasTasks && (
+                      <span className="w-2 h-2 bg-orange-500 rounded-full"></span>
+                    )}
+                  </div>
                 </button>
               );
             })}
@@ -372,14 +392,14 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
           </div>
         </div>
 
-        {/* 오늘 할 일 (캡션) */}
+        {/* 선택한 날짜의 할 일 */}
         <div className={`rounded-2xl border-2 shadow-lg p-6 ${
           darkMode ? 'bg-[#121212] border-[#2a2a2a]' : 'bg-white border-[#8B7355]'
         }`}>
           <h3 className={`text-xl font-bold mb-4 pb-3 border-b-2 ${
             darkMode ? 'text-white border-[#2a2a2a]' : 'text-gray-900 border-[#d4c4a8]'
           }`}>
-            ✅ 오늘 할 일
+            ✅ {selectedDate.getFullYear()}년 {selectedDate.getMonth() + 1}월 {selectedDate.getDate()}일 할 일
           </h3>
 
           <div className="mb-4 flex gap-2">
@@ -388,7 +408,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
               value={newTaskText}
               onChange={(e) => setNewTaskText(e.target.value.slice(0, 20))}
               onKeyPress={(e) => e.key === 'Enter' && handleAddTask()}
-              placeholder="오늘 할 일을 입력하세요 (최대 20자)"
+              placeholder="할 일을 입력하세요 (최대 20자)"
               className={`flex-1 px-4 py-3 border-2 rounded-lg focus:outline-none ${
                 darkMode
                   ? 'bg-[#1a1a1a] border-[#2a2a2a] text-white placeholder-gray-400 focus:border-[#333333]'
@@ -405,11 +425,11 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
             </Button>
           </div>
           <p className="text-xs text-gray-500 mb-3 text-center">
-            할 일 저장: {todayTasks.length}/100 | 체크 버튼을 눌러 삭제
+            할 일 저장: {selectedDateTasks.length}/100 | 체크 버튼을 눌러 삭제
           </p>
 
           <div className="space-y-2 max-h-[300px] overflow-y-auto">
-            {todayTasks.map((task) => (
+            {selectedDateTasks.map((task) => (
               <div
                 key={task.id}
                 className={`flex items-center gap-3 p-3 rounded-lg transition-colors ${
@@ -431,7 +451,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                 </button>
               </div>
             ))}
-            {todayTasks.length === 0 && (
+            {selectedDateTasks.length === 0 && (
               <p className={`text-center py-8 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>할 일이 없습니다</p>
             )}
           </div>

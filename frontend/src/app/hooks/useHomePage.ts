@@ -10,6 +10,7 @@ import {
   PathfinderView as PathfinderViewType,
   Event,
   Task,
+  Diary,
 } from '../../components/types';
 import { getLocalDateStr, extractCategories, parseJSONResponse } from '../../lib';
 
@@ -37,7 +38,10 @@ export const useHomePage = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [events, setEvents] = useState<Event[]>([]);
-  const [todayTasks, setTodayTasks] = useState<Task[]>([]);
+  const [tasks, setTasks] = useState<Task[]>([]);
+
+  // Diary 관련 상태
+  const [diaries, setDiaries] = useState<Diary[]>([]);
 
   const menuItems = [
     { id: 'home', label: 'Home', icon: '🏠' },
@@ -432,8 +436,12 @@ export const useHomePage = () => {
     setCurrentMonth,
     events,
     setEvents,
-    todayTasks,
-    setTodayTasks,
+    tasks,
+    setTasks,
+
+    // Diary 상태
+    diaries,
+    setDiaries,
 
     // Handlers
     handleMicClick,
